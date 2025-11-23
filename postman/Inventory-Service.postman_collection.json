@@ -1,0 +1,330 @@
+{
+  "info": {
+    "name": "E-commerce Inventory Service",
+    "description": "Inventory and stock management endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health/inventory",
+          "host": ["{{baseUrl}}"],
+          "path": ["health", "inventory"]
+        }
+      }
+    },
+    {
+      "name": "Create Inventory Record",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"productName\": \"iPhone 15 Pro\",\n  \"sku\": \"IPH15P-256-SB\",\n  \"currentStock\": 50,\n  \"reorderLevel\": 10,\n  \"maxStock\": 200,\n  \"location\": {\n    \"warehouse\": \"Main Warehouse\",\n    \"section\": \"Electronics\",\n    \"shelf\": \"A1\",\n    \"bin\": \"001\"\n  },\n  \"supplier\": {\n    \"name\": \"Apple Inc.\",\n    \"contact\": \"+1-800-APL-CARE\",\n    \"email\": \"supplier@apple.com\"\n  },\n  \"costPrice\": 750.00\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory"]
+        }
+      }
+    },
+    {
+      "name": "Get All Inventory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Inventory by Product ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}"]
+        }
+      }
+    },
+    {
+      "name": "Get Low Stock Items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory?lowStock=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory"],
+          "query": [
+            {
+              "key": "lowStock",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Out of Stock Items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory?outOfStock=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory"],
+          "query": [
+            {
+              "key": "outOfStock",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Add Stock (Stock In)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 25,\n  \"type\": \"in\",\n  \"reason\": \"New stock received from supplier\",\n  \"reference\": \"PO-2024-001\",\n  \"performedBy\": \"warehouse_manager\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/stock",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "stock"]
+        }
+      }
+    },
+    {
+      "name": "Remove Stock (Stock Out)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 5,\n  \"type\": \"out\",\n  \"reason\": \"Damaged items removed\",\n  \"reference\": \"DMG-2024-001\",\n  \"performedBy\": \"quality_control\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/stock",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "stock"]
+        }
+      }
+    },
+    {
+      "name": "Stock Adjustment",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 45,\n  \"type\": \"adjustment\",\n  \"reason\": \"Physical count adjustment\",\n  \"reference\": \"ADJ-2024-001\",\n  \"performedBy\": \"inventory_manager\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/stock",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "stock"]
+        }
+      }
+    },
+    {
+      "name": "Reserve Stock for Order",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 2,\n  \"orderId\": \"{{orderId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/reserve",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "reserve"]
+        }
+      }
+    },
+    {
+      "name": "Release Reserved Stock (Cancel Order)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 2,\n  \"orderId\": \"{{orderId}}\",\n  \"fulfill\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/release",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "release"]
+        }
+      }
+    },
+    {
+      "name": "Fulfill Reserved Stock (Complete Order)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 2,\n  \"orderId\": \"{{orderId}}\",\n  \"fulfill\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/release",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "release"]
+        }
+      }
+    },
+    {
+      "name": "Get Low Stock Alerts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/alerts/low-stock",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "alerts", "low-stock"]
+        }
+      }
+    },
+    {
+      "name": "Get Inventory Statistics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/stats/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "stats", "summary"]
+        }
+      }
+    },
+    {
+      "name": "Get Inventory Movements",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/{{productId}}/movements",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory", "{{productId}}", "movements"]
+        }
+      }
+    },
+    {
+      "name": "Filter by Warehouse",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory?warehouse=Main Warehouse",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory"],
+          "query": [
+            {
+              "key": "warehouse",
+              "value": "Main Warehouse"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Sample Inventory Records",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": \"SAMPLE_PRODUCT_ID_2\",\n  \"productName\": \"Samsung Galaxy S24\",\n  \"sku\": \"SGS24-256-PB\",\n  \"currentStock\": 30,\n  \"reorderLevel\": 5,\n  \"maxStock\": 100,\n  \"location\": {\n    \"warehouse\": \"Main Warehouse\",\n    \"section\": \"Electronics\",\n    \"shelf\": \"B2\",\n    \"bin\": \"002\"\n  },\n  \"supplier\": {\n    \"name\": \"Samsung Electronics\",\n    \"contact\": \"+1-800-SAMSUNG\",\n    \"email\": \"supplier@samsung.com\"\n  },\n  \"costPrice\": 650.00\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "inventory"]
+        }
+      }
+    }
+  ]
+}

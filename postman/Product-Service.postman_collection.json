@@ -1,0 +1,274 @@
+{
+  "info": {
+    "name": "E-commerce Product Service",
+    "description": "Product catalog management endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["health", "products"]
+        }
+      }
+    },
+    {
+      "name": "Create Product",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('productId', response.data.product._id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"The latest iPhone with advanced Pro camera system, Action button, and titanium design.\",\n  \"price\": 999.99,\n  \"category\": \"Electronics\",\n  \"brand\": \"Apple\",\n  \"stock\": 50,\n  \"images\": [\n    \"https://example.com/iphone15pro-1.jpg\",\n    \"https://example.com/iphone15pro-2.jpg\"\n  ],\n  \"specifications\": {\n    \"weight\": \"187g\",\n    \"dimensions\": \"146.6 x 70.6 x 8.25 mm\",\n    \"color\": \"Space Black\",\n    \"material\": \"Titanium\",\n    \"warranty\": \"1 year\"\n  },\n  \"tags\": [\"smartphone\", \"apple\", \"premium\", \"5g\"],\n  \"featured\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        }
+      }
+    },
+    {
+      "name": "Get All Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Product by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        }
+      }
+    },
+    {
+      "name": "Search Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products?search=iPhone&category=Electronics&minPrice=500&maxPrice=1500",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"],
+          "query": [
+            {
+              "key": "search",
+              "value": "iPhone"
+            },
+            {
+              "key": "category",
+              "value": "Electronics"
+            },
+            {
+              "key": "minPrice",
+              "value": "500"
+            },
+            {
+              "key": "maxPrice",
+              "value": "1500"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Filter by Category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products?category=Electronics&sort=price_asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"],
+          "query": [
+            {
+              "key": "category",
+              "value": "Electronics"
+            },
+            {
+              "key": "sort",
+              "value": "price_asc"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Featured Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products?featured=true&limit=5",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"],
+          "query": [
+            {
+              "key": "featured",
+              "value": "true"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Product",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"iPhone 15 Pro - Updated\",\n  \"description\": \"Updated description for the latest iPhone with advanced Pro camera system.\",\n  \"price\": 1099.99,\n  \"stock\": 75,\n  \"featured\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        }
+      }
+    },
+    {
+      "name": "Update Product Stock",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"stock\": 100\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}/stock",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}", "stock"]
+        }
+      }
+    },
+    {
+      "name": "Get Categories",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/categories/list",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "categories", "list"]
+        }
+      }
+    },
+    {
+      "name": "Get Brands",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/brands/list",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "brands", "list"]
+        }
+      }
+    },
+    {
+      "name": "Create Sample Products",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"name\": \"Samsung Galaxy S24\",\n    \"description\": \"Latest Samsung flagship with AI features\",\n    \"price\": 899.99,\n    \"category\": \"Electronics\",\n    \"brand\": \"Samsung\",\n    \"stock\": 30,\n    \"images\": [\"https://example.com/galaxy-s24.jpg\"],\n    \"specifications\": {\n      \"color\": \"Phantom Black\",\n      \"storage\": \"256GB\",\n      \"warranty\": \"1 year\"\n    },\n    \"tags\": [\"smartphone\", \"android\", \"samsung\"]\n  },\n  {\n    \"name\": \"MacBook Pro 16-inch\",\n    \"description\": \"Powerful laptop for professionals\",\n    \"price\": 2499.99,\n    \"category\": \"Electronics\",\n    \"brand\": \"Apple\",\n    \"stock\": 15,\n    \"images\": [\"https://example.com/macbook-pro.jpg\"],\n    \"specifications\": {\n      \"processor\": \"M3 Pro\",\n      \"memory\": \"18GB\",\n      \"storage\": \"512GB SSD\",\n      \"warranty\": \"1 year\"\n    },\n    \"tags\": [\"laptop\", \"apple\", \"professional\"]\n  }\n]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        }
+      }
+    },
+    {
+      "name": "Delete Product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        }
+      }
+    }
+  ]
+}
