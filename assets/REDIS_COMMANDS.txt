@@ -1,0 +1,19 @@
+# Redis Commands for Docker Setup
+
+# Connect to Docker Redis (port 6380)
+redis-cli -p 6380
+
+# Check cache keys
+redis-cli -p 6380 keys "api_cache:*"
+
+# Get specific cache value
+redis-cli -p 6380 get "api_cache:GET:/api/products:{}"
+
+# Monitor Redis operations
+redis-cli -p 6380 monitor
+
+# Check Redis info
+redis-cli -p 6380 info
+
+# Clear all cache
+redis-cli -p 6380 flushall

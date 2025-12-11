@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const userEventService = require('../services/userEventService');
 
 const router = express.Router();
 
@@ -41,6 +42,9 @@ router.post('/register', async (req, res) => {
 
     // Generate token
     const token = generateToken(user._id);
+
+    // Publish user registered event
+    await userEventService.publishUserRegistered(user);
 
     res.status(201).json({
       success: true,
@@ -85,6 +89,9 @@ router.post('/login', async (req, res) => {
 
     // Generate token
     const token = generateToken(user._id);
+
+    // Publish user login event
+    await userEventService.publishUserLogin(user);
 
     res.json({
       success: true,
@@ -133,6 +140,9 @@ router.put('/profile', authenticateToken, async (req, res) => {
       { name, phone, address },
       { new: true, runValidators: true }
     );
+
+    // Publish user profile updated event
+    await userEventService.publishUserProfileUpdated(user);
 
     res.json({
       success: true,
@@ -201,6 +211,9 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
         message: 'User not found'
       });
     }
+
+    // Publish user deactivated event
+    await userEventService.publishUserDeactivated(req.params.id);
 
     res.json({
       success: true,

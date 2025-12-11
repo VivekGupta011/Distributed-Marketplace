@@ -234,3 +234,17 @@ ecosystem.config.js
 # Local configuration overrides
 config.local.js
 config.local.json
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Shell scripts (except essential ones)
+*.sh
+!start.sh
+!deploy.sh
+
+# Documentation files (keep only README.md)
+*.md
+!README.md
