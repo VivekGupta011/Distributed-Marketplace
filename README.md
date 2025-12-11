@@ -1,8 +1,11 @@
 # E-commerce Microservices Application
 
+
 A simple e-commerce microservices application built for learning purposes. This project demonstrates microservices architecture with NGINX reverse proxy as an API Gateway, RabbitMQ for asynchronous messaging, and email notifications.
 
+
 ## 🏗️ Architecture Overview
+
 
 ```
 ┌─────────────────┐    ┌──────────────────────────────────────┐
@@ -35,7 +38,9 @@ A simple e-commerce microservices application built for learning purposes. This 
                               └─────────────────┘
 ```
 
+
 ## 🚀 Services Overview
+
 
 ### 1. User Service (Port 4001)
 - **Purpose**: User management and authentication
@@ -45,7 +50,8 @@ A simple e-commerce microservices application built for learning purposes. This 
   - User profile management
   - Admin user management
   - Publishes user events to RabbitMQ
-- **Routes**: `/api/users/*`
+- **Routes**: /api/users/* 
+
 
 ### 2. Product Service (Port 4002)
 - **Purpose**: Product catalog management
@@ -55,7 +61,8 @@ A simple e-commerce microservices application built for learning purposes. This 
   - Category and brand management
   - Stock level tracking
   - Publishes product events to RabbitMQ
-- **Routes**: `/api/products/*`
+- **Routes**: /api/products/* 
+
 
 ### 3. Order Service (Port 4003)
 - **Purpose**: Order processing and management
@@ -65,7 +72,8 @@ A simple e-commerce microservices application built for learning purposes. This 
   - Order statistics
   - Integration with product and inventory services
   - Publishes order events to RabbitMQ
-- **Routes**: `/api/orders/*`
+- **Routes**: /api/orders/* 
+
 
 ### 4. Inventory Service (Port 4004)
 - **Purpose**: Stock and inventory management
@@ -75,7 +83,8 @@ A simple e-commerce microservices application built for learning purposes. This 
   - Stock reservations for orders
   - Low stock alerts
   - Consumes product and order events from RabbitMQ
-- **Routes**: `/api/inventory/*`
+- **Routes**: /api/inventory/* 
+
 
 ### 5. Email Service (Port 4005)
 - **Purpose**: Email notification management
@@ -86,9 +95,11 @@ A simple e-commerce microservices application built for learning purposes. This 
   - Password reset emails
   - Low stock alerts for admins
   - Consumes events from RabbitMQ
-- **Routes**: `/api/emails/*`
+- **Routes**: /api/emails/* 
+
 
 ## 📨 Message Queue (RabbitMQ)
+
 
 ### Exchanges and Queues:
 - **user.events**: User registration, profile updates
