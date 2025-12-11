@@ -16,11 +16,33 @@ services:
     networks:
       - ecommerce-network
 
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: ecommerce-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"     # AMQP port
+      - "15672:15672"   # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # User Service
   user-service:
     build:
-      context: ./services/user-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/user-service/Dockerfile
     container_name: ecommerce-user-service
     restart: unless-stopped
     expose:
@@ -31,8 +53,17 @@ services:
       MONGODB_URI: mongodb://admin:password123@mongodb:27017/ecommerce_microservices?authSource=admin
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
       JWT_EXPIRES_IN: 24h
+      # RabbitMQ Configuration
+      RABBITMQ_URL: amqp://admin:password123@rabbitmq:5672
+      # Email Configuration
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: vivek.hiralal@signzy.com
+      SMTP_PASS: "gwbg roty ufpu yswj"
+      SMTP_FROM: vivek.hiralal@signzy.com
     depends_on:
       - mongodb
+      - rabbitmq
     networks:
       - ecommerce-network
     healthcheck:
@@ -67,8 +98,8 @@ services:
   # Order Service
   order-service:
     build:
-      context: ./services/order-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/order-service/Dockerfile
     container_name: ecommerce-order-service
     restart: unless-stopped
     expose:
@@ -80,8 +111,17 @@ services:
       USER_SERVICE_URL: http://user-service:4001
       PRODUCT_SERVICE_URL: http://product-service:4002
       INVENTORY_SERVICE_URL: http://inventory-service:4004
+      # RabbitMQ Configuration
+      RABBITMQ_URL: amqp://admin:password123@rabbitmq:5672
+      # Email Configuration
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: vivek.hiralal@signzy.com
+      SMTP_PASS: "gwbg roty ufpu yswj"
+      SMTP_FROM: vivek.hiralal@signzy.com
     depends_on:
       - mongodb
+      - rabbitmq
       - user-service
       - product-service
     networks:
@@ -142,6 +182,8 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
+  rabbitmq_data:
     driver: local
 
 networks:

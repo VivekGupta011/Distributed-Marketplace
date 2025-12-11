@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const Order = require('../models/Order');
+const orderEventService = require('../services/orderEventService');
 
 const router = express.Router();
 
@@ -78,11 +79,13 @@ router.post('/', async (req, res) => {
 
     await order.save();
 
+    // Publish order created event
+    await orderEventService.publishOrderCreated(order);
+
     // TODO: In a real application, you would:
     // 1. Reserve inventory
     // 2. Process payment
-    // 3. Send confirmation email
-    // 4. Update product stock
+    // 3. Update product stock
 
     res.status(201).json({
       success: true,
@@ -249,6 +252,17 @@ router.put('/:id/status', async (req, res) => {
   try {
     const { status, trackingNumber, estimatedDelivery, notes } = req.body;
     
+    // Get the current order to track previous status
+    const currentOrder = await Order.findById(req.params.id);
+    if (!currentOrder) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    const previousStatus = currentOrder.status;
+    
     const updateData = { status };
     
     if (trackingNumber) updateData.trackingNumber = trackingNumber;
@@ -266,12 +280,8 @@ router.put('/:id/status', async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
-    }
+    // Publish order status updated event
+    await orderEventService.publishOrderStatusUpdated(order, previousStatus);
 
     res.json({
       success: true,
@@ -295,24 +305,31 @@ router.put('/:id/payment', async (req, res) => {
   try {
     const { paymentStatus } = req.body;
 
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { paymentStatus },
-      { new: true, runValidators: true }
-    );
-
-    if (!order) {
+    // Get the current order to track previous payment status
+    const currentOrder = await Order.findById(req.params.id);
+    if (!currentOrder) {
       return res.status(404).json({
         success: false,
         message: 'Order not found'
       });
     }
 
+    const previousPaymentStatus = currentOrder.paymentStatus;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { paymentStatus },
+      { new: true, runValidators: true }
+    );
+
     // If payment is successful, update order status to confirmed
     if (paymentStatus === 'paid' && order.status === 'pending') {
       order.status = 'confirmed';
       await order.save();
     }
+
+    // Publish payment status updated event
+    await orderEventService.publishPaymentStatusUpdated(order, previousPaymentStatus);
 
     res.json({
       success: true,
@@ -353,6 +370,9 @@ router.delete('/:id', async (req, res) => {
 
     order.status = 'cancelled';
     await order.save();
+
+    // Publish order cancelled event
+    await orderEventService.publishOrderCancelled(order);
 
     res.json({
       success: true,

@@ -4,6 +4,9 @@ const cors = require('cors');
 require('dotenv').config();
 
 const userRoutes = require('./routes/userRoutes');
+const rabbitmqHelper = require('./shared/rabbitmq');
+const emailService = require('./shared/emailService');
+const userEventService = require('./services/userEventService');
 
 const app = express();
 
@@ -43,19 +46,41 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
+// Initialize services and database connection
+async function startServer() {
+  try {
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('✅ Connected to MongoDB');
-    
+
+    console.log('🔄 Initializing RabbitMQ...');
+    // Initialize RabbitMQ
+    await rabbitmqHelper.connect();
+    console.log('✅ Connected to RabbitMQ');
+
+    console.log('🔄 Initializing Email Service...');
+    // Initialize Email Service
+    await emailService.initialize();
+    console.log('✅ Email service initialized');
+
+    console.log('🔄 Subscribing to order events...');
+    // Subscribe to order events
+    await userEventService.subscribeToOrderEvents();
+    console.log('✅ Subscribed to order events');
+
+    // Setup graceful shutdown
+    rabbitmqHelper.setupGracefulShutdown();
+
     // Start server
     const PORT = process.env.PORT || 4001;
     app.listen(PORT, () => {
-      console.log(`🚀 User Service running on port ${PORT}`);
-      console.log(`📍 Health check: http://localhost:${PORT}/health`);
+      console.log(`User Service running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/health`);
     });
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
+  } catch (error) {
+    console.error('Failed to start server:', error);
     process.exit(1);
-  });
+  }
+}
+
+startServer();

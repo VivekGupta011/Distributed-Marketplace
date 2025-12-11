@@ -7,13 +7,16 @@ RUN apk add --no-cache curl
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY ./services/user-service/package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production
 
 # Copy source code
-COPY . .
+COPY ./services/user-service/ .
+
+# Copy shared modules
+COPY ./shared ./shared
 
 # Expose port
 EXPOSE 4001
