@@ -58,9 +58,9 @@ services:
       # Email Configuration
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: 587
-      SMTP_USER: vivek.hiralal@signzy.com
+      SMTP_USER: viveksite01@gmail.com
       SMTP_PASS: "gwbg roty ufpu yswj"
-      SMTP_FROM: vivek.hiralal@signzy.com
+      SMTP_FROM: viveksite01@gmail.com
     depends_on:
       - mongodb
       - rabbitmq
