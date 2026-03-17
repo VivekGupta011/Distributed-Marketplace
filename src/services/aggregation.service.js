@@ -7,6 +7,7 @@ class AggregationService {
   constructor() {
     this.services = {
       user: config.USER_SERVICE_URL,
+      user: config.USER_SERVICE_URL,
       product: config.PRODUCT_SERVICE_URL,
       order: config.ORDER_SERVICE_URL,
       inventory: config.INVENTORY_SERVICE_URL
